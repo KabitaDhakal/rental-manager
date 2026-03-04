@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="card shadow p-4 mx-auto" style="max-width: 400px">
+  <h4 class="text-center mb-3">Developer Access</h4>
+
+  <form method="POST">
+    <input
+      type="password"
+      name="password"
+      class="form-control mb-3"
+      placeholder="Enter password"
+    />
+    <button class="btn btn-dark w-100">Login</button>
+  </form>
+</div>
+
+{% endblock %}

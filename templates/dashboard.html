@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3>Payment Dashboard</h3>
+  <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+</div>
+
+{% for payment in payments %}
+<div class="card mb-3 shadow-sm">
+  <h5 class="fw-bold">{{ payment['tenant_name'] }} - ${{ payment['amount'] }}</h5>
+
+<p class="text-muted small">
+    Paid: {{ payment['payment_date'] }} <br>
+    Period: {{ payment['from_date'] }} → {{ payment['to_date'] }} <br>
+    Submitted: {{ payment['submitted_at'] }}
+</p>
+
+{% if payment['receipt_filename'] %}
+<a href="{{ url_for('static', filename='uploads/' + payment['receipt_filename']) }}" target="_blank">
+    View Receipt
+</a>
+{% else %}
+    <span class="text-muted">No receipt uploaded</span>
+{% endif %}
+  </div>
+</div>
+{% endfor %} {% endblock %}

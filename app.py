@@ -7,6 +7,8 @@ from werkzeug.utils import secure_filename
 import sqlite3
 import os
 from datetime import datetime
+import csv
+from flask import Response
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -126,6 +128,72 @@ def dashboard():
 
     return render_template("dashboard.html", payments=payments)
 
+# ==============================
+# Delete payment
+# ==============================
+
+@app.route("/delete/<int:id>")
+def delete_payment(id):
+
+    if not session.get("admin"):
+        return redirect(url_for("admin_login"))
+
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM payments WHERE id=?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    flash("Record deleted", "warning")
+
+    return redirect(url_for("dashboard"))
+
+# ==============================
+# Download CSV
+# ==============================
+
+@app.route("/download")
+def download():
+
+    if not session.get("admin"):
+        return redirect(url_for("admin_login"))
+
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM payments")
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    def generate():
+
+        data = csv.writer()
+
+        header = [
+            "Tenant",
+            "Amount",
+            "Payment Date",
+            "From Date",
+            "To Date",
+            "Receipt",
+            "Submitted At"
+        ]
+
+        yield ",".join(header) + "\n"
+
+        for row in rows:
+
+            yield f"{row['tenant_name']},{row['amount']},{row['payment_date']},{row['from_date']},{row['to_date']},{row['receipt_filename']},{row['submitted_at']}\n"
+
+    return Response(
+        generate(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment;filename=payments.csv"}
+    )
 # ==============================
 # 📌 Logout
 # ==============================

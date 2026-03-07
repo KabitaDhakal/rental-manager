@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>RentManager</title>
+    <title>SE 60, 1 Beresford Road</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- Bootstrap -->
@@ -37,10 +37,12 @@
   <body>
     <nav class="navbar navbar-dark bg-primary">
       <div class="container d-flex justify-content-between">
-        <span class="navbar-brand fw-bold fs-4">RentManager</span>
-        <a href="/admin" class="btn btn-light btn-sm rounded-pill"
-          >Developer Portal</a
-        >
+        <span class="navbar-brand fw-bold fs-4">SE 60, 1 Beresford Road</span>
+        {% if session.get('admin') %}
+        <a href="/dashboard" class="btn btn-light btn-sm rounded-pill">
+          Dashboard
+        </a>
+        {% endif %}
       </div>
     </nav>
 

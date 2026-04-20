@@ -9,9 +9,106 @@
   </div>
 </div>
 
-<div class="card shadow-sm">
+<!-- SUMMARY CARD -->
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-center shadow-sm p-3">
+      <h6>Total Rent</h6>
+      <h4>$1900</h4>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card text-center shadow-sm p-3">
+      <h6>Received</h6>
+      <h4 class="text-success">${{ total_received }}</h4>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card text-center shadow-sm p-3">
+      <h6>Remaining</h6>
+      <h4 class="text-danger">${{ remaining }}</h4>
+    </div>
+  </div>
+</div>
+
+<!-- RENT STATUS TRACKER -->
+
+<h4 class="mt-4">Rent Status ({{ cycle_start }} → {{ cycle_end }})</h4>
+
+<div class="card shadow-sm mb-4">
   <div class="table-responsive">
-    <table class="table table-striped table-hover mb-0">
+    <table class="table table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>Tenant</th>
+          <th>Status</th>
+          <th>Paid</th>
+          <th>Expected</th>
+          <th>Remaining</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for t in tenant_status %}
+        <tr>
+          <td>{{ t.name }}</td>
+
+          <td>
+            {% if t.status == "Paid" %}
+            <span class="badge bg-success">Paid</span>
+            {% elif t.status == "Partial" %}
+            <span class="badge bg-warning text-dark">Partial</span>
+            {% else %}
+            <span class="badge bg-danger">Unpaid</span>
+            {% endif %}
+          </td>
+
+          <td>${{ t.paid }}</td>
+          <td>${{ t.expected }}</td>
+          <td>${{ t.expected - t.paid }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h4>Your Payment to Owner</h4>
+
+<table class="table table-bordered">
+  <tr>
+    <th>Name</th>
+    <th>Status</th>
+    <th>Paid</th>
+    <th>Total</th>
+    <th>Remaining</th>
+  </tr>
+
+  <tr>
+    <td>Kabita</td>
+    <td>
+      {% if your_status == "Paid" %}
+      <span class="badge bg-success">Paid</span>
+      {% elif your_status == "Partial" %}
+      <span class="badge bg-warning">Partial</span>
+      {% else %}
+      <span class="badge bg-danger">Unpaid</span>
+      {% endif %}
+    </td>
+    <td>${{ your_paid }}</td>
+    <td>${{ owner_rent }}</td>
+    <td>${{ your_remaining }}</td>
+  </tr>
+</table>
+<!-- RENT TABLE -->
+<h4 class="mt-4">Rent Payments</h4>
+
+<div class="card shadow-sm mb-4">
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
       <thead class="table-dark">
         <tr>
           <th>Tenant</th>
@@ -25,7 +122,133 @@
       </thead>
 
       <tbody>
-        {% for payment in payments %}
+        {% for payment in rent_payments %}
+
+        <tr>
+          <td>{{ payment['tenant_name'] }}</td>
+
+          <td>${{ payment['amount'] }}</td>
+
+          <td>{{ payment['payment_date'] }}</td>
+
+          <td>{{ payment['from_date'] }} → {{ payment['to_date'] }}</td>
+
+          <td>
+            {% if payment['receipt_filename'] %}
+
+            <a
+              href="{{ url_for('static', filename='uploads/' + payment['receipt_filename']) }}"
+              target="_blank"
+            >
+              View
+            </a>
+
+            {% else %} - {% endif %}
+          </td>
+
+          <td>{{ payment['submitted_at'] }}</td>
+
+          <td>
+            <a
+              href="/delete/{{ payment['id'] }}"
+              class="btn btn-danger btn-sm"
+              onclick="return confirm('Delete this record?');"
+            >
+              Delete
+            </a>
+          </td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ELECTRICITY & GAS -->
+
+<h4>Electricity & Gas</h4>
+
+<div class="card shadow-sm mb-4">
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Tenant</th>
+          <th>Amount</th>
+          <th>Payment Date</th>
+          <th>Period</th>
+          <th>Receipt</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for payment in electricity_payments %}
+
+        <tr>
+          <td>{{ payment['tenant_name'] }}</td>
+
+          <td>${{ payment['amount'] }}</td>
+
+          <td>{{ payment['payment_date'] }}</td>
+
+          <td>{{ payment['from_date'] }} → {{ payment['to_date'] }}</td>
+
+          <td>
+            {% if payment['receipt_filename'] %}
+
+            <a
+              href="{{ url_for('static', filename='uploads/' + payment['receipt_filename']) }}"
+              target="_blank"
+            >
+              View
+            </a>
+
+            {% else %} - {% endif %}
+          </td>
+
+          <td>{{ payment['submitted_at'] }}</td>
+
+          <td>
+            <a
+              href="/delete/{{ payment['id'] }}"
+              class="btn btn-danger btn-sm"
+              onclick="return confirm('Delete this record?');"
+            >
+              Delete
+            </a>
+          </td>
+        </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- INTERNET -->
+
+<h4>Internet</h4>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Tenant</th>
+          <th>Amount</th>
+          <th>Payment Date</th>
+          <th>Period</th>
+          <th>Receipt</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for payment in internet_payments %}
 
         <tr>
           <td>{{ payment['tenant_name'] }}</td>

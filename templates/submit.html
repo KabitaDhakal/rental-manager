@@ -1,20 +1,47 @@
 {% extends "base.html" %} {% block content %}
-
 <div class="card-modern p-4 p-md-5 bg-white">
   <h4 class="fw-bold mb-4 text-primary">Submit Payment Record</h4>
 
   <form method="POST" enctype="multipart/form-data">
+    <!-- Category Buttons -->
+    <div class="mb-4">
+      <label class="form-label fw-semibold">Payment Type</label>
+      <div class="d-flex gap-2 category-group">
+        <button
+          type="button"
+          class="btn btn-outline-primary category-btn"
+          data-category="rent"
+        >
+          Rent
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary category-btn"
+          data-category="electricity_gas"
+        >
+          Electricity & Gas
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-primary category-btn"
+          data-category="internet"
+        >
+          Internet
+        </button>
+      </div>
+    </div>
+
+    <input type="hidden" name="category" id="category" value="rent" />
+
     <div class="row g-4">
       <div class="col-md-6">
         <label class="form-label fw-semibold">Tenant Name</label>
         <input type="text" name="tenant_name" class="form-control" required />
       </div>
-
       <div class="col-md-6">
         <label class="form-label fw-semibold">Payment Date</label>
         <input type="date" name="payment_date" class="form-control" required />
       </div>
-
       <div class="col-md-6">
         <label class="form-label fw-semibold">Payment Amount</label>
         <input
@@ -25,17 +52,14 @@
           required
         />
       </div>
-
       <div class="col-md-6">
         <label class="form-label fw-semibold">Period From</label>
         <input type="date" name="from_date" class="form-control" required />
       </div>
-
       <div class="col-md-6">
         <label class="form-label fw-semibold">Period To</label>
         <input type="date" name="to_date" class="form-control" required />
       </div>
-
       <div class="col-12">
         <label class="form-label fw-semibold">Upload Receipt</label>
         <input type="file" name="receipt" class="form-control" />
@@ -45,5 +69,33 @@
     <button class="btn btn-primary w-100 mt-4">Submit Payment Info</button>
   </form>
 </div>
+{% endblock %} {% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const buttons = document.querySelectorAll(".category-btn");
+    const hiddenInput = document.getElementById("category");
 
+    function activateButton(btn) {
+      buttons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        hiddenInput.value = this.dataset.category;
+        activateButton(this);
+      });
+    });
+
+    // ✅ Default selection = rent
+    const defaultBtn = document.querySelector(
+      ".category-btn[data-category='rent']",
+    );
+
+    if (defaultBtn) {
+      activateButton(defaultBtn);
+      hiddenInput.value = "rent";
+    }
+  });
+</script>
 {% endblock %}
